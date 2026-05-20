@@ -96,7 +96,7 @@ jobs:
             yarn install
           fi
 
-      - name: 🔨 Build iOS
+      - name: Build iOS
         run: |
           echo "============================================"
           echo "  BUILD iOS EN MAC"
