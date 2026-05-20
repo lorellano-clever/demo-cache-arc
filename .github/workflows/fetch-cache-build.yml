@@ -82,7 +82,7 @@ jobs:
             node_modules
           key: deps-${{ hashFiles('yarn.lock') }}
 
-      - name: 🔍 Verificar restauración del cache
+      - name: Verificar restauración del cache
         run: |
           if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
             echo "CACHE RESTAURADO EXITOSAMENTE"
@@ -92,7 +92,7 @@ jobs:
             ls node_modules/poc-bch-mobile-core/
             ls node_modules/poc-bch-mobile-ui/
           else
-            echo "⚠️ Cache no encontrado, instalando desde cero..."
+            echo "Cache no encontrado, instalando desde cero..."
             yarn install
           fi
 
@@ -108,7 +108,7 @@ jobs:
           yarn build
           echo ""
           echo "============================================"
-          echo "  ✅ BUILD iOS COMPLETADO EXITOSAMENTE"
+          echo "  BUILD iOS COMPLETADO EXITOSAMENTE"
           echo "  Las dependencias fueron consumidas del CACHE"
           echo "  No fue necesario conectarse a Nexus/ACR"
           echo "============================================"
