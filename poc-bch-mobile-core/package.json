@@ -1,0 +1,6 @@
+{
+  "name": "poc-bch-mobile-core",
+  "version": "1.0.0",
+  "description": "POC Core Library - Simula librería custom sin scope traída de Nexus",
+  "main": "index.js"
+}

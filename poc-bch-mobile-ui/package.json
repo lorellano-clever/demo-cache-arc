@@ -1,0 +1,9 @@
+{
+  "name": "poc-bch-mobile-ui",
+  "version": "1.0.0",
+  "description": "POC UI Library - Simula librería custom con subdependencia traída de Nexus",
+  "main": "index.js",
+  "dependencies": {
+    "poc-bch-mobile-core": "file:../poc-bch-mobile-core"
+  }
+}

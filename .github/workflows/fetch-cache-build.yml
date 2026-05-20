@@ -1,0 +1,114 @@
+name: Fetch, Cache & Build iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # ============================================================
+  # JOB 1: Simula traer dependencias desde Nexus/ACR y las cachea
+  # ============================================================
+  fetch-and-cache:
+    name: 📦 Fetch Dependencies (Simulando Nexus/ACR)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: 🔍 Simular conexión a ACR
+        run: |
+          echo "============================================"
+          echo "  SIMULANDO: Conectando a ARC..."
+          echo "  SIMULANDO: Descargando poc-bch-mobile-core@1.0.0 desde ACR/Nexus"
+          echo "  SIMULANDO: Descargando poc-bch-mobile-ui@1.0.0 desde ACR/Nexus"
+          echo "  SIMULANDO: Conexión exitosa"
+          echo "============================================"
+
+      - name: Instalar dependencias (simulando fetch desde Nexus)
+        run: yarn install
+
+      - name: 📋 Verificar dependencias instaladas
+        run: |
+          echo "=== Dependencias instaladas ==="
+          ls -la node_modules/poc-bch-mobile-core/
+          ls -la node_modules/poc-bch-mobile-ui/
+          ls -la node_modules/lodash/ | head -5
+          echo "=== Test rápido ==="
+          node -e "const ui = require('poc-bch-mobile-ui'); console.log(ui.renderComponent());"
+
+      - name: Cachear node_modules
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+          key: deps-${{ hashFiles('yarn.lock') }}
+
+      - name: ✅ Cache generado exitosamente
+        run: |
+          echo "============================================"
+          echo "  Cache guardado con key: deps-<hash>"
+          echo "  Contenido cacheado:"
+          echo "    - node_modules/ (todas las dependencias)"
+          echo "  Listo para ser consumido por el build en Mac"
+          echo "============================================"
+
+  # ============================================================
+  # JOB 2: Restaura el cache y hace build en Mac
+  # ============================================================
+  build-ios:
+    name: Build iOS (Mac)
+    needs: fetch-and-cache
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Restaurar cache de dependencias
+        uses: actions/cache/restore@v4
+        id: cache-restore
+        with:
+          path: |
+            node_modules
+          key: deps-${{ hashFiles('yarn.lock') }}
+
+      - name: 🔍 Verificar restauración del cache
+        run: |
+          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
+            echo "CACHE RESTAURADO EXITOSAMENTE"
+            echo "Las dependencias fueron traídas del cache, NO de Nexus/ACR"
+            echo ""
+            echo "=== Verificando dependencias ==="
+            ls node_modules/poc-bch-mobile-core/
+            ls node_modules/poc-bch-mobile-ui/
+          else
+            echo "⚠️ Cache no encontrado, instalando desde cero..."
+            yarn install
+          fi
+
+      - name: 🔨 Build iOS
+        run: |
+          echo "============================================"
+          echo "  BUILD iOS EN MAC"
+          echo "  Runner: $(uname -a)"
+          echo "  Node: $(node -v)"
+          echo "============================================"
+          echo ""
+          echo "--- Ejecutando build ---"
+          yarn build
+          echo ""
+          echo "============================================"
+          echo "  ✅ BUILD iOS COMPLETADO EXITOSAMENTE"
+          echo "  Las dependencias fueron consumidas del CACHE"
+          echo "  No fue necesario conectarse a Nexus/ACR"
+          echo "============================================"

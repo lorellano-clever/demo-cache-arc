@@ -1,0 +1,14 @@
+{
+  "name": "demo-cache-nexus",
+  "version": "1.0.0",
+  "description": "POC - Simula fetch de dependencias desde Nexus/ACR, cacheo en GitHub Actions y build en Mac",
+  "private": true,
+  "dependencies": {
+    "poc-bch-mobile-core": "file:./poc-bch-mobile-core",
+    "poc-bch-mobile-ui": "file:./poc-bch-mobile-ui",
+    "lodash": "^4.17.21"
+  },
+  "scripts": {
+    "build": "node -e \"const ui = require('poc-bch-mobile-ui'); console.log(ui.renderComponent()); console.log('BUILD EXITOSO');\""
+  }
+}
